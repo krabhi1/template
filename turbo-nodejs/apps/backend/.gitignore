@@ -1,0 +1,4 @@
+.tubo
+dist
+node_modules
+.env
