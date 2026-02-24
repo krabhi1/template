@@ -1,13 +1,17 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { username } from "better-auth/plugins";
+import { username, emailOTP } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { db } from "./db";
+import { sendVerifyEmail } from "./resend";
 export const auth = betterAuth({
 	database: drizzleAdapter(db, { provider: "sqlite" }),
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
+	},
+	emailVerification: {
+		sendOnSignUp: false,
 	},
 	socialProviders: {
 		google: {
@@ -29,7 +33,20 @@ export const auth = betterAuth({
 			},
 		},
 	},
-	plugins: [tanstackStartCookies(), username()],
+	plugins: [
+		tanstackStartCookies(),
+		username(),
+		emailOTP({
+			async sendVerificationOTP({ email, otp, type }) {
+				console.log(`Sending OTP ${otp} to ${email} for ${type}`);
+				if (type === "email-verification" || type === "sign-in") {
+					await sendVerifyEmail(email, otp);
+				}
+			},
+			overrideDefaultEmailVerification: true,
+			sendVerificationOnSignUp: false,
+		}),
+	],
 });
 
 export function getServerSession(request: Request) {

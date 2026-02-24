@@ -1,4 +1,5 @@
 import handler from "@tanstack/react-start/server-entry";
+import { sendVerifyEmail } from "./resend";
 
 /**
  * Cloudflare Worker Entry Point
