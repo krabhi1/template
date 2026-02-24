@@ -18,9 +18,9 @@ const loginSchema = z.object({
 
 export const Route = createFileRoute("/(public)/login")({
 	beforeLoad: ({ context }) => {
-		if (context.session) {
-			throw redirect({ to: "/" });
-		}
+		// if (context.session) {
+		// 	throw redirect({ to: "/" });
+		// }
 	},
 	component: LoginComponent,
 });
@@ -137,12 +137,21 @@ function LoginComponent() {
 					</div>
 
 					<div>
-						<label
-							htmlFor="password"
-							className="block text-sm font-medium mb-1 text-gray-700"
-						>
-							Password
-						</label>
+						<div className="flex items-center justify-between mb-1">
+							<label
+								htmlFor="password"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Password
+							</label>
+							<Link
+								to="/forgot-password"
+								search={{ email: form.getFieldValue("email") }}
+								className="text-xs font-medium text-blue-600 hover:underline focus:outline-none"
+							>
+								Forgot password?
+							</Link>
+						</div>
 						<form.Field
 							name="password"
 							children={(field) => (

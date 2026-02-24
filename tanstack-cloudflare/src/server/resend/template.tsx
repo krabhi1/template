@@ -1,10 +1,52 @@
 import * as React from "react";
 
-interface VerifyEmailTemplateProps {
+export type EmailTemplateType =
+	| "email-verification"
+	| "sign-in"
+	| "forget-password"
+	| "change-password";
+
+interface EmailTemplateProps {
 	otp: string;
+	type: EmailTemplateType;
 }
 
-export function VerifyEmailTemplate({ otp }: VerifyEmailTemplateProps) {
+const CONFIG = {
+	"email-verification": {
+		title: "Verify Your Email",
+		description:
+			"Welcome! Please verify your email address to complete your signup.",
+		otpLabel: "Your verification code is:",
+		footer:
+			"If you didn't sign up for this account, you can safely ignore this email.",
+	},
+	"sign-in": {
+		title: "Sign In to Your Account",
+		description: "Use the one-time password below to sign in to your account.",
+		otpLabel: "Your sign-in code is:",
+		footer:
+			"If you didn't request this code, someone may be trying to access your account.",
+	},
+	"forget-password": {
+		title: "Reset Your Password",
+		description:
+			"We received a request to reset your password. Use the OTP below to proceed.",
+		otpLabel: "Your reset code is:",
+		footer:
+			"If you didn't request a password reset, you can safely ignore this email.",
+	},
+	"change-password": {
+		title: "Change Your Password",
+		description:
+			"You requested to change your password. Use the OTP below to proceed.",
+		otpLabel: "Your one-time password is:",
+		footer: "Enter this code in your app to complete the password change.",
+	},
+} as const;
+
+export function EmailTemplate({ otp, type }: EmailTemplateProps) {
+	const content = CONFIG[type] || CONFIG["email-verification"];
+
 	return (
 		<div
 			style={{
@@ -18,219 +60,82 @@ export function VerifyEmailTemplate({ otp }: VerifyEmailTemplateProps) {
 					maxWidth: "600px",
 					margin: "0 auto",
 					backgroundColor: "white",
-					padding: "20px",
+					padding: "30px",
 					borderRadius: "8px",
+					boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
 				}}
 			>
 				<div style={{ textAlign: "center", marginBottom: "30px" }}>
-					<h1>Verify Your Email</h1>
+					<h1 style={{ color: "#333", margin: "0" }}>{content.title}</h1>
 				</div>
-				<p>
-					Welcome! Please verify your email address to complete your signup.
+
+				<p style={{ color: "#555", fontSize: "16px", lineHeight: "1.5" }}>
+					{content.description}
 				</p>
+
 				<div
 					style={{
-						backgroundColor: "#f0f0f0",
-						padding: "20px",
+						backgroundColor: "#f9f9f9",
+						padding: "30px",
 						textAlign: "center",
-						borderRadius: "6px",
-						margin: "20px 0",
+						borderRadius: "8px",
+						margin: "25px 0",
+						border: "1px solid #eee",
 					}}
 				>
-					<p>Your verification code is:</p>
+					<p style={{ color: "#666", marginBottom: "15px", fontSize: "14px" }}>
+						{content.otpLabel}
+					</p>
 					<div
 						style={{
-							fontSize: "32px",
+							fontSize: "36px",
 							fontWeight: "bold",
-							letterSpacing: "5px",
-							color: "#333",
+							letterSpacing: "6px",
+							color: "#1a73e8",
+							fontFamily: "monospace",
 						}}
 					>
 						{otp}
 					</div>
-					<p style={{ color: "#999", fontSize: "14px" }}>
+					<p style={{ color: "#999", fontSize: "12px", marginTop: "15px" }}>
 						This code expires in 15 minutes
 					</p>
 				</div>
-				<p>
-					If you didn't sign up for this account, you can safely ignore this
-					email.
-				</p>
-				<div
-					style={{
-						textAlign: "center",
-						color: "#666",
-						fontSize: "12px",
-						marginTop: "30px",
-					}}
-				>
-					<p>&copy; 2026 Your App. All rights reserved.</p>
-				</div>
-			</div>
-		</div>
-	);
-}
 
-interface ForgotPasswordTemplateProps {
-	firstName: string;
-	resetLink: string;
-}
-
-export function ForgotPasswordTemplate({
-	firstName,
-	resetLink,
-}: ForgotPasswordTemplateProps) {
-	return (
-		<div
-			style={{
-				fontFamily: "Arial, sans-serif",
-				backgroundColor: "#f4f4f4",
-				padding: "20px",
-			}}
-		>
-			<div
-				style={{
-					maxWidth: "600px",
-					margin: "0 auto",
-					backgroundColor: "white",
-					padding: "20px",
-					borderRadius: "8px",
-				}}
-			>
-				<div style={{ textAlign: "center", marginBottom: "30px" }}>
-					<h1>Reset Your Password</h1>
-				</div>
-				<p>Hi {firstName},</p>
-				<p>
-					We received a request to reset your password. Click the button below
-					to create a new password.
+				<p style={{ color: "#555", fontSize: "14px", lineHeight: "1.5" }}>
+					{content.footer}
 				</p>
-				<div style={{ textAlign: "center", margin: "20px 0" }}>
-					<a
-						href={resetLink}
-						style={{
-							display: "inline-block",
-							backgroundColor: "#007bff",
-							color: "white",
-							padding: "12px 30px",
-							textDecoration: "none",
-							borderRadius: "6px",
-						}}
-					>
-						Reset Password
-					</a>
-				</div>
-				<p style={{ textAlign: "center", color: "#666", fontSize: "14px" }}>
-					Or copy this link: <a href={resetLink}>{resetLink}</a>
-				</p>
-				<div
-					style={{
-						backgroundColor: "#fff3cd",
-						padding: "15px",
-						borderRadius: "6px",
-						margin: "20px 0",
-						color: "#856404",
-					}}
-				>
-					<strong>⚠️ Security Note:</strong> This link expires in 1 hour. If you
-					didn't request this, ignore this email.
-				</div>
-				<div
-					style={{
-						textAlign: "center",
-						color: "#666",
-						fontSize: "12px",
-						marginTop: "30px",
-					}}
-				>
-					<p>&copy; 2026 Your App. All rights reserved.</p>
-				</div>
-			</div>
-		</div>
-	);
-}
 
-interface ChangePasswordOTPTemplateProps {
-	firstName: string;
-	otp: string;
-	expiresAt: string; // e.g., "15 minutes from now"
-}
-
-export function ChangePasswordOTPTemplate({
-	firstName,
-	otp,
-	expiresAt,
-}: ChangePasswordOTPTemplateProps) {
-	return (
-		<div
-			style={{
-				fontFamily: "Arial, sans-serif",
-				backgroundColor: "#f4f4f4",
-				padding: "20px",
-			}}
-		>
-			<div
-				style={{
-					maxWidth: "600px",
-					margin: "0 auto",
-					backgroundColor: "white",
-					padding: "20px",
-					borderRadius: "8px",
-				}}
-			>
-				<div style={{ textAlign: "center", marginBottom: "30px" }}>
-					<h1>Change Your Password</h1>
-				</div>
-				<p>Hi {firstName},</p>
-				<p>
-					You requested to change your password. Use the OTP below to proceed.
-				</p>
-				<div
-					style={{
-						backgroundColor: "#f0f0f0",
-						padding: "20px",
-						textAlign: "center",
-						borderRadius: "6px",
-						margin: "20px 0",
-					}}
-				>
-					<p>Your one-time password is:</p>
+				{type === "change-password" && (
 					<div
 						style={{
-							fontSize: "32px",
-							fontWeight: "bold",
-							letterSpacing: "5px",
-							color: "#333",
+							backgroundColor: "#fff3cd",
+							padding: "15px",
+							borderRadius: "6px",
+							margin: "20px 0",
+							color: "#856404",
+							fontSize: "13px",
+							border: "1px solid #ffeeba",
 						}}
 					>
-						{otp}
+						<strong>⚠️ Security Note:</strong> Do not share this code with
+						anyone.
 					</div>
-					<p style={{ color: "#999", fontSize: "14px" }}>
-						Expires in {expiresAt}
-					</p>
-				</div>
-				<p>Enter this code in your app to complete the password change.</p>
-				<div
-					style={{
-						backgroundColor: "#fff3cd",
-						padding: "15px",
-						borderRadius: "6px",
-						margin: "20px 0",
-						color: "#856404",
-					}}
-				>
-					<strong>⚠️ Security Note:</strong> Do not share this code. If you
-					didn’t request this, ignore this email.
-				</div>
+				)}
+
 				<div
 					style={{
 						textAlign: "center",
-						color: "#666",
+						color: "#888",
 						fontSize: "12px",
-						marginTop: "30px",
+						marginTop: "40px",
+						borderTop: "1px solid #eee",
+						paddingTop: "20px",
 					}}
 				>
-					<p>&copy; 2026 Your App. All rights reserved.</p>
+					<p>
+						&copy; {new Date().getFullYear()} Your App. All rights reserved.
+					</p>
 				</div>
 			</div>
 		</div>

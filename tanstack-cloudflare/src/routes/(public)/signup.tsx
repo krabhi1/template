@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useState } from "react";
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/(public)/signup")({
 function SignupComponent() {
 	const [otpDialogOpen, setOtpDialogOpen] = useState(false);
 	const [formError, setFormError] = useState<string | null>(null);
+	const navigate = useNavigate();
 
 	const form = useForm({
 		defaultValues: { name: "", email: "", password: "" },
@@ -35,10 +36,7 @@ function SignupComponent() {
 				name: value.name,
 			});
 
-			if (
-				!signUpResult.error ||
-				signUpResult.error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
-			) {
+			if (!signUpResult.error) {
 				const otpResult = await authClient.emailOtp.sendVerificationOtp({
 					email: value.email,
 					type: "email-verification",
@@ -53,6 +51,17 @@ function SignupComponent() {
 				}
 
 				setOtpDialogOpen(true);
+				return;
+			}
+
+			if (signUpResult.error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+				setFormError("Account already exists. Redirecting to login...");
+				setTimeout(() => {
+					navigate({
+						to: "/login",
+						search: { email: value.email },
+					});
+				}, 2000);
 				return;
 			}
 

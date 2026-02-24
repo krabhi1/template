@@ -39,8 +39,12 @@ export const auth = betterAuth({
 		emailOTP({
 			async sendVerificationOTP({ email, otp, type }) {
 				console.log(`Sending OTP ${otp} to ${email} for ${type}`);
-				if (type === "email-verification" || type === "sign-in") {
-					await sendVerifyEmail(email, otp);
+				if (
+					type === "email-verification" ||
+					type === "sign-in" ||
+					type === "forget-password"
+				) {
+					// await sendVerifyEmail(email, otp, type);
 				}
 			},
 			overrideDefaultEmailVerification: true,
